@@ -1,6 +1,6 @@
 Package: clockSim
 Title: Simulation of the Circadian Clock Gene Network
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Authors@R: 
     person("Ye", "Yuan", , "yeyu@umich.edu", 
     role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9641-9102"))
