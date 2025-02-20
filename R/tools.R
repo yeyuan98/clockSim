@@ -52,7 +52,7 @@ run_eta <- function(odin_model, ...){
 #'
 #' @examples
 #' # Generate a period = 50 sine wave data with some noise (even spacing)
-#' n <- 5000
+#' n <- 1000
 #' time <- seq(1, n, by = 1)
 #' ts_data <- sin(2 * pi * time / 50) + rnorm(n, sd = 0.5)
 #' compute_period(ts_data)
@@ -127,7 +127,13 @@ plot_phase <- function(df_result, x, y, time = NULL){
   y <- deparse1(substitute(y))
   time <- deparse1(substitute(time))
   if (time == "NULL"){
-    time <- "step"
+    choices <- c("step", "t") # discrete/continuous
+    sel <- choices %in% names(df_result)
+    if (any(sel)){
+      time <- choices[sel]
+    } else{
+      rlang::abort("Please provide time column.")
+    }
   }
   
   if (!all(c(x,y,time) %in% names(df_result)))

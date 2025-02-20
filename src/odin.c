@@ -5,7 +5,7 @@
 #include <Rinternals.h>
 #include <stdbool.h>
 #include <R_ext/Rdynload.h>
-typedef struct discrete_leloup_goldbeter_noisy_internal {
+typedef struct deriv_leloup_goldbeter_internal {
   double C_ini;
   double C_N_ini;
   double initial_C;
@@ -39,7 +39,6 @@ typedef struct discrete_leloup_goldbeter_noisy_internal {
   double P_0_ini;
   double P_1_ini;
   double P_2_ini;
-  double STEP_HOURS;
   double T_0_ini;
   double T_1_ini;
   double T_2_ini;
@@ -58,11 +57,7 @@ typedef struct discrete_leloup_goldbeter_noisy_internal {
   double V_sT;
   double VdT_OFF;
   double VdT_ON;
-  double VsP_NOISE_RATIO;
-  double VsP_NOISE_TYPE;
-  double VsT_NOISE_RATIO;
-  double VsT_NOISE_TYPE;
-} discrete_leloup_goldbeter_noisy_internal;
+} deriv_leloup_goldbeter_internal;
 typedef struct discrete_leloup_goldbeter_internal {
   double C_ini;
   double C_N_ini;
@@ -117,18 +112,19 @@ typedef struct discrete_leloup_goldbeter_internal {
   double VdT_OFF;
   double VdT_ON;
 } discrete_leloup_goldbeter_internal;
-discrete_leloup_goldbeter_noisy_internal* discrete_leloup_goldbeter_noisy_get_internal(SEXP internal_p, int closed_error);
-static void discrete_leloup_goldbeter_noisy_finalise(SEXP internal_p);
-SEXP discrete_leloup_goldbeter_noisy_create(SEXP user);
-void discrete_leloup_goldbeter_noisy_initmod_desolve(void(* odeparms) (int *, double *));
-SEXP discrete_leloup_goldbeter_noisy_contents(SEXP internal_p);
-SEXP discrete_leloup_goldbeter_noisy_set_user(SEXP internal_p, SEXP user);
-SEXP discrete_leloup_goldbeter_noisy_set_initial(SEXP internal_p, SEXP step_ptr, SEXP state_ptr);
-SEXP discrete_leloup_goldbeter_noisy_metadata(SEXP internal_p);
-SEXP discrete_leloup_goldbeter_noisy_initial_conditions(SEXP internal_p, SEXP step_ptr);
-void discrete_leloup_goldbeter_noisy_rhs(discrete_leloup_goldbeter_noisy_internal* internal, size_t step, double * state, double * state_next, double * output);
-void discrete_leloup_goldbeter_noisy_rhs_dde(size_t n_eq, size_t step, double * state, double * state_next, size_t n_out, double * output, void * internal);
-SEXP discrete_leloup_goldbeter_noisy_rhs_r(SEXP internal_p, SEXP step, SEXP state);
+deriv_leloup_goldbeter_internal* deriv_leloup_goldbeter_get_internal(SEXP internal_p, int closed_error);
+static void deriv_leloup_goldbeter_finalise(SEXP internal_p);
+SEXP deriv_leloup_goldbeter_create(SEXP user);
+void deriv_leloup_goldbeter_initmod_desolve(void(* odeparms) (int *, double *));
+SEXP deriv_leloup_goldbeter_contents(SEXP internal_p);
+SEXP deriv_leloup_goldbeter_set_user(SEXP internal_p, SEXP user);
+SEXP deriv_leloup_goldbeter_set_initial(SEXP internal_p, SEXP t_ptr, SEXP state_ptr, SEXP deriv_leloup_goldbeter_use_dde_ptr);
+SEXP deriv_leloup_goldbeter_metadata(SEXP internal_p);
+SEXP deriv_leloup_goldbeter_initial_conditions(SEXP internal_p, SEXP t_ptr);
+void deriv_leloup_goldbeter_rhs(deriv_leloup_goldbeter_internal* internal, double t, double * state, double * dstatedt, double * output);
+void deriv_leloup_goldbeter_rhs_dde(size_t neq, double t, double * state, double * dstatedt, void * internal);
+void deriv_leloup_goldbeter_rhs_desolve(int * neq, double * t, double * state, double * dstatedt, double * output, int * np);
+SEXP deriv_leloup_goldbeter_rhs_r(SEXP internal_p, SEXP t, SEXP state);
 discrete_leloup_goldbeter_internal* discrete_leloup_goldbeter_get_internal(SEXP internal_p, int closed_error);
 static void discrete_leloup_goldbeter_finalise(SEXP internal_p);
 SEXP discrete_leloup_goldbeter_create(SEXP user);
@@ -154,27 +150,28 @@ void user_check_values(SEXP value, double min, double max,
 SEXP user_list_element(SEXP list, const char *name);
 double fmodr(double x, double y);
 double fintdiv(double x, double y);
+double scalar_real(SEXP x, const char * name);
 int scalar_int(SEXP x, const char * name);
-discrete_leloup_goldbeter_noisy_internal* discrete_leloup_goldbeter_noisy_get_internal(SEXP internal_p, int closed_error) {
-  discrete_leloup_goldbeter_noisy_internal *internal = NULL;
+deriv_leloup_goldbeter_internal* deriv_leloup_goldbeter_get_internal(SEXP internal_p, int closed_error) {
+  deriv_leloup_goldbeter_internal *internal = NULL;
   if (TYPEOF(internal_p) != EXTPTRSXP) {
     Rf_error("Expected an external pointer");
   }
-  internal = (discrete_leloup_goldbeter_noisy_internal*) R_ExternalPtrAddr(internal_p);
+  internal = (deriv_leloup_goldbeter_internal*) R_ExternalPtrAddr(internal_p);
   if (!internal && closed_error) {
     Rf_error("Pointer has been invalidated");
   }
   return internal;
 }
-void discrete_leloup_goldbeter_noisy_finalise(SEXP internal_p) {
-  discrete_leloup_goldbeter_noisy_internal *internal = discrete_leloup_goldbeter_noisy_get_internal(internal_p, 0);
+void deriv_leloup_goldbeter_finalise(SEXP internal_p) {
+  deriv_leloup_goldbeter_internal *internal = deriv_leloup_goldbeter_get_internal(internal_p, 0);
   if (internal_p) {
     R_Free(internal);
     R_ClearExternalPtr(internal_p);
   }
 }
-SEXP discrete_leloup_goldbeter_noisy_create(SEXP user) {
-  discrete_leloup_goldbeter_noisy_internal *internal = (discrete_leloup_goldbeter_noisy_internal*) R_Calloc(1, discrete_leloup_goldbeter_noisy_internal);
+SEXP deriv_leloup_goldbeter_create(SEXP user) {
+  deriv_leloup_goldbeter_internal *internal = (deriv_leloup_goldbeter_internal*) R_Calloc(1, deriv_leloup_goldbeter_internal);
   internal->C_ini = 0;
   internal->C_N_ini = 0;
   internal->k_1 = 0.80000000000000004;
@@ -191,14 +188,13 @@ SEXP discrete_leloup_goldbeter_noisy_create(SEXP user) {
   internal->K_p = 2;
   internal->k_sP = 0.90000000000000002;
   internal->k_sT = 0.90000000000000002;
-  internal->LD_HOURS = 120;
+  internal->LD_HOURS = 240;
   internal->M_P_ini = 0;
   internal->M_T_ini = 0;
   internal->n = 4;
   internal->P_0_ini = 0;
   internal->P_1_ini = 0;
   internal->P_2_ini = 0;
-  internal->STEP_HOURS = 0.10000000000000001;
   internal->T_0_ini = 0;
   internal->T_1_ini = 0;
   internal->T_2_ini = 0;
@@ -217,27 +213,23 @@ SEXP discrete_leloup_goldbeter_noisy_create(SEXP user) {
   internal->V_sT = 1;
   internal->VdT_OFF = 3;
   internal->VdT_ON = 6;
-  internal->VsP_NOISE_RATIO = -(1);
-  internal->VsP_NOISE_TYPE = 0;
-  internal->VsT_NOISE_RATIO = -(1);
-  internal->VsT_NOISE_TYPE = 0;
   SEXP ptr = PROTECT(R_MakeExternalPtr(internal, R_NilValue, R_NilValue));
-  R_RegisterCFinalizer(ptr, discrete_leloup_goldbeter_noisy_finalise);
+  R_RegisterCFinalizer(ptr, deriv_leloup_goldbeter_finalise);
   UNPROTECT(1);
   return ptr;
 }
-static discrete_leloup_goldbeter_noisy_internal *discrete_leloup_goldbeter_noisy_internal_ds;
-void discrete_leloup_goldbeter_noisy_initmod_desolve(void(* odeparms) (int *, double *)) {
+static deriv_leloup_goldbeter_internal *deriv_leloup_goldbeter_internal_ds;
+void deriv_leloup_goldbeter_initmod_desolve(void(* odeparms) (int *, double *)) {
   static DL_FUNC get_desolve_gparms = NULL;
   if (get_desolve_gparms == NULL) {
     get_desolve_gparms =
       R_GetCCallable("deSolve", "get_deSolve_gparms");
   }
-  discrete_leloup_goldbeter_noisy_internal_ds = discrete_leloup_goldbeter_noisy_get_internal(get_desolve_gparms(), 1);
+  deriv_leloup_goldbeter_internal_ds = deriv_leloup_goldbeter_get_internal(get_desolve_gparms(), 1);
 }
-SEXP discrete_leloup_goldbeter_noisy_contents(SEXP internal_p) {
-  discrete_leloup_goldbeter_noisy_internal *internal = discrete_leloup_goldbeter_noisy_get_internal(internal_p, 1);
-  SEXP contents = PROTECT(allocVector(VECSXP, 56));
+SEXP deriv_leloup_goldbeter_contents(SEXP internal_p) {
+  deriv_leloup_goldbeter_internal *internal = deriv_leloup_goldbeter_get_internal(internal_p, 1);
+  SEXP contents = PROTECT(allocVector(VECSXP, 51));
   SET_VECTOR_ELT(contents, 0, ScalarReal(internal->C_ini));
   SET_VECTOR_ELT(contents, 1, ScalarReal(internal->C_N_ini));
   SET_VECTOR_ELT(contents, 2, ScalarReal(internal->initial_C));
@@ -271,30 +263,25 @@ SEXP discrete_leloup_goldbeter_noisy_contents(SEXP internal_p) {
   SET_VECTOR_ELT(contents, 30, ScalarReal(internal->P_0_ini));
   SET_VECTOR_ELT(contents, 31, ScalarReal(internal->P_1_ini));
   SET_VECTOR_ELT(contents, 32, ScalarReal(internal->P_2_ini));
-  SET_VECTOR_ELT(contents, 33, ScalarReal(internal->STEP_HOURS));
-  SET_VECTOR_ELT(contents, 34, ScalarReal(internal->T_0_ini));
-  SET_VECTOR_ELT(contents, 35, ScalarReal(internal->T_1_ini));
-  SET_VECTOR_ELT(contents, 36, ScalarReal(internal->T_2_ini));
-  SET_VECTOR_ELT(contents, 37, ScalarReal(internal->V_1P));
-  SET_VECTOR_ELT(contents, 38, ScalarReal(internal->V_1T));
-  SET_VECTOR_ELT(contents, 39, ScalarReal(internal->V_2P));
-  SET_VECTOR_ELT(contents, 40, ScalarReal(internal->V_2T));
-  SET_VECTOR_ELT(contents, 41, ScalarReal(internal->V_3P));
-  SET_VECTOR_ELT(contents, 42, ScalarReal(internal->V_3T));
-  SET_VECTOR_ELT(contents, 43, ScalarReal(internal->V_4P));
-  SET_VECTOR_ELT(contents, 44, ScalarReal(internal->V_4T));
-  SET_VECTOR_ELT(contents, 45, ScalarReal(internal->V_dP));
-  SET_VECTOR_ELT(contents, 46, ScalarReal(internal->V_mP));
-  SET_VECTOR_ELT(contents, 47, ScalarReal(internal->V_mT));
-  SET_VECTOR_ELT(contents, 48, ScalarReal(internal->V_sP));
-  SET_VECTOR_ELT(contents, 49, ScalarReal(internal->V_sT));
-  SET_VECTOR_ELT(contents, 50, ScalarReal(internal->VdT_OFF));
-  SET_VECTOR_ELT(contents, 51, ScalarReal(internal->VdT_ON));
-  SET_VECTOR_ELT(contents, 52, ScalarReal(internal->VsP_NOISE_RATIO));
-  SET_VECTOR_ELT(contents, 53, ScalarReal(internal->VsP_NOISE_TYPE));
-  SET_VECTOR_ELT(contents, 54, ScalarReal(internal->VsT_NOISE_RATIO));
-  SET_VECTOR_ELT(contents, 55, ScalarReal(internal->VsT_NOISE_TYPE));
-  SEXP nms = PROTECT(allocVector(STRSXP, 56));
+  SET_VECTOR_ELT(contents, 33, ScalarReal(internal->T_0_ini));
+  SET_VECTOR_ELT(contents, 34, ScalarReal(internal->T_1_ini));
+  SET_VECTOR_ELT(contents, 35, ScalarReal(internal->T_2_ini));
+  SET_VECTOR_ELT(contents, 36, ScalarReal(internal->V_1P));
+  SET_VECTOR_ELT(contents, 37, ScalarReal(internal->V_1T));
+  SET_VECTOR_ELT(contents, 38, ScalarReal(internal->V_2P));
+  SET_VECTOR_ELT(contents, 39, ScalarReal(internal->V_2T));
+  SET_VECTOR_ELT(contents, 40, ScalarReal(internal->V_3P));
+  SET_VECTOR_ELT(contents, 41, ScalarReal(internal->V_3T));
+  SET_VECTOR_ELT(contents, 42, ScalarReal(internal->V_4P));
+  SET_VECTOR_ELT(contents, 43, ScalarReal(internal->V_4T));
+  SET_VECTOR_ELT(contents, 44, ScalarReal(internal->V_dP));
+  SET_VECTOR_ELT(contents, 45, ScalarReal(internal->V_mP));
+  SET_VECTOR_ELT(contents, 46, ScalarReal(internal->V_mT));
+  SET_VECTOR_ELT(contents, 47, ScalarReal(internal->V_sP));
+  SET_VECTOR_ELT(contents, 48, ScalarReal(internal->V_sT));
+  SET_VECTOR_ELT(contents, 49, ScalarReal(internal->VdT_OFF));
+  SET_VECTOR_ELT(contents, 50, ScalarReal(internal->VdT_ON));
+  SEXP nms = PROTECT(allocVector(STRSXP, 51));
   SET_STRING_ELT(nms, 0, mkChar("C_ini"));
   SET_STRING_ELT(nms, 1, mkChar("C_N_ini"));
   SET_STRING_ELT(nms, 2, mkChar("initial_C"));
@@ -328,35 +315,30 @@ SEXP discrete_leloup_goldbeter_noisy_contents(SEXP internal_p) {
   SET_STRING_ELT(nms, 30, mkChar("P_0_ini"));
   SET_STRING_ELT(nms, 31, mkChar("P_1_ini"));
   SET_STRING_ELT(nms, 32, mkChar("P_2_ini"));
-  SET_STRING_ELT(nms, 33, mkChar("STEP_HOURS"));
-  SET_STRING_ELT(nms, 34, mkChar("T_0_ini"));
-  SET_STRING_ELT(nms, 35, mkChar("T_1_ini"));
-  SET_STRING_ELT(nms, 36, mkChar("T_2_ini"));
-  SET_STRING_ELT(nms, 37, mkChar("V_1P"));
-  SET_STRING_ELT(nms, 38, mkChar("V_1T"));
-  SET_STRING_ELT(nms, 39, mkChar("V_2P"));
-  SET_STRING_ELT(nms, 40, mkChar("V_2T"));
-  SET_STRING_ELT(nms, 41, mkChar("V_3P"));
-  SET_STRING_ELT(nms, 42, mkChar("V_3T"));
-  SET_STRING_ELT(nms, 43, mkChar("V_4P"));
-  SET_STRING_ELT(nms, 44, mkChar("V_4T"));
-  SET_STRING_ELT(nms, 45, mkChar("V_dP"));
-  SET_STRING_ELT(nms, 46, mkChar("V_mP"));
-  SET_STRING_ELT(nms, 47, mkChar("V_mT"));
-  SET_STRING_ELT(nms, 48, mkChar("V_sP"));
-  SET_STRING_ELT(nms, 49, mkChar("V_sT"));
-  SET_STRING_ELT(nms, 50, mkChar("VdT_OFF"));
-  SET_STRING_ELT(nms, 51, mkChar("VdT_ON"));
-  SET_STRING_ELT(nms, 52, mkChar("VsP_NOISE_RATIO"));
-  SET_STRING_ELT(nms, 53, mkChar("VsP_NOISE_TYPE"));
-  SET_STRING_ELT(nms, 54, mkChar("VsT_NOISE_RATIO"));
-  SET_STRING_ELT(nms, 55, mkChar("VsT_NOISE_TYPE"));
+  SET_STRING_ELT(nms, 33, mkChar("T_0_ini"));
+  SET_STRING_ELT(nms, 34, mkChar("T_1_ini"));
+  SET_STRING_ELT(nms, 35, mkChar("T_2_ini"));
+  SET_STRING_ELT(nms, 36, mkChar("V_1P"));
+  SET_STRING_ELT(nms, 37, mkChar("V_1T"));
+  SET_STRING_ELT(nms, 38, mkChar("V_2P"));
+  SET_STRING_ELT(nms, 39, mkChar("V_2T"));
+  SET_STRING_ELT(nms, 40, mkChar("V_3P"));
+  SET_STRING_ELT(nms, 41, mkChar("V_3T"));
+  SET_STRING_ELT(nms, 42, mkChar("V_4P"));
+  SET_STRING_ELT(nms, 43, mkChar("V_4T"));
+  SET_STRING_ELT(nms, 44, mkChar("V_dP"));
+  SET_STRING_ELT(nms, 45, mkChar("V_mP"));
+  SET_STRING_ELT(nms, 46, mkChar("V_mT"));
+  SET_STRING_ELT(nms, 47, mkChar("V_sP"));
+  SET_STRING_ELT(nms, 48, mkChar("V_sT"));
+  SET_STRING_ELT(nms, 49, mkChar("VdT_OFF"));
+  SET_STRING_ELT(nms, 50, mkChar("VdT_ON"));
   setAttrib(contents, R_NamesSymbol, nms);
   UNPROTECT(2);
   return contents;
 }
-SEXP discrete_leloup_goldbeter_noisy_set_user(SEXP internal_p, SEXP user) {
-  discrete_leloup_goldbeter_noisy_internal *internal = discrete_leloup_goldbeter_noisy_get_internal(internal_p, 1);
+SEXP deriv_leloup_goldbeter_set_user(SEXP internal_p, SEXP user) {
+  deriv_leloup_goldbeter_internal *internal = deriv_leloup_goldbeter_get_internal(internal_p, 1);
   internal->C_ini = user_get_scalar_double(user, "C_ini", internal->C_ini, NA_REAL, NA_REAL);
   internal->C_N_ini = user_get_scalar_double(user, "C_N_ini", internal->C_N_ini, NA_REAL, NA_REAL);
   internal->k_1 = user_get_scalar_double(user, "k_1", internal->k_1, NA_REAL, NA_REAL);
@@ -380,7 +362,6 @@ SEXP discrete_leloup_goldbeter_noisy_set_user(SEXP internal_p, SEXP user) {
   internal->P_0_ini = user_get_scalar_double(user, "P_0_ini", internal->P_0_ini, NA_REAL, NA_REAL);
   internal->P_1_ini = user_get_scalar_double(user, "P_1_ini", internal->P_1_ini, NA_REAL, NA_REAL);
   internal->P_2_ini = user_get_scalar_double(user, "P_2_ini", internal->P_2_ini, NA_REAL, NA_REAL);
-  internal->STEP_HOURS = user_get_scalar_double(user, "STEP_HOURS", internal->STEP_HOURS, NA_REAL, NA_REAL);
   internal->T_0_ini = user_get_scalar_double(user, "T_0_ini", internal->T_0_ini, NA_REAL, NA_REAL);
   internal->T_1_ini = user_get_scalar_double(user, "T_1_ini", internal->T_1_ini, NA_REAL, NA_REAL);
   internal->T_2_ini = user_get_scalar_double(user, "T_2_ini", internal->T_2_ini, NA_REAL, NA_REAL);
@@ -399,10 +380,6 @@ SEXP discrete_leloup_goldbeter_noisy_set_user(SEXP internal_p, SEXP user) {
   internal->V_sT = user_get_scalar_double(user, "V_sT", internal->V_sT, NA_REAL, NA_REAL);
   internal->VdT_OFF = user_get_scalar_double(user, "VdT_OFF", internal->VdT_OFF, NA_REAL, NA_REAL);
   internal->VdT_ON = user_get_scalar_double(user, "VdT_ON", internal->VdT_ON, NA_REAL, NA_REAL);
-  internal->VsP_NOISE_RATIO = user_get_scalar_double(user, "VsP_NOISE_RATIO", internal->VsP_NOISE_RATIO, NA_REAL, NA_REAL);
-  internal->VsP_NOISE_TYPE = user_get_scalar_double(user, "VsP_NOISE_TYPE", internal->VsP_NOISE_TYPE, NA_REAL, NA_REAL);
-  internal->VsT_NOISE_RATIO = user_get_scalar_double(user, "VsT_NOISE_RATIO", internal->VsT_NOISE_RATIO, NA_REAL, NA_REAL);
-  internal->VsT_NOISE_TYPE = user_get_scalar_double(user, "VsT_NOISE_TYPE", internal->VsT_NOISE_TYPE, NA_REAL, NA_REAL);
   internal->initial_C = internal->C_ini;
   internal->initial_C_N = internal->C_N_ini;
   internal->initial_M_P = internal->M_P_ini;
@@ -415,11 +392,11 @@ SEXP discrete_leloup_goldbeter_noisy_set_user(SEXP internal_p, SEXP user) {
   internal->initial_T_2 = internal->T_2_ini;
   return R_NilValue;
 }
-SEXP discrete_leloup_goldbeter_noisy_set_initial(SEXP internal_p, SEXP step_ptr, SEXP state_ptr) {
+SEXP deriv_leloup_goldbeter_set_initial(SEXP internal_p, SEXP t_ptr, SEXP state_ptr, SEXP deriv_leloup_goldbeter_use_dde_ptr) {
   return R_NilValue;
 }
-SEXP discrete_leloup_goldbeter_noisy_metadata(SEXP internal_p) {
-  discrete_leloup_goldbeter_noisy_internal *internal = discrete_leloup_goldbeter_noisy_get_internal(internal_p, 1);
+SEXP deriv_leloup_goldbeter_metadata(SEXP internal_p) {
+  deriv_leloup_goldbeter_internal *internal = deriv_leloup_goldbeter_get_internal(internal_p, 1);
   SEXP ret = PROTECT(allocVector(VECSXP, 4));
   SEXP nms = PROTECT(allocVector(STRSXP, 4));
   SET_STRING_ELT(nms, 0, mkChar("variable_order"));
@@ -457,8 +434,8 @@ SEXP discrete_leloup_goldbeter_noisy_metadata(SEXP internal_p) {
   UNPROTECT(2);
   return ret;
 }
-SEXP discrete_leloup_goldbeter_noisy_initial_conditions(SEXP internal_p, SEXP step_ptr) {
-  discrete_leloup_goldbeter_noisy_internal *internal = discrete_leloup_goldbeter_noisy_get_internal(internal_p, 1);
+SEXP deriv_leloup_goldbeter_initial_conditions(SEXP internal_p, SEXP t_ptr) {
+  deriv_leloup_goldbeter_internal *internal = deriv_leloup_goldbeter_get_internal(internal_p, 1);
   SEXP r_state = PROTECT(allocVector(REALSXP, 10));
   double * state = REAL(r_state);
   state[0] = internal->initial_M_T;
@@ -474,7 +451,7 @@ SEXP discrete_leloup_goldbeter_noisy_initial_conditions(SEXP internal_p, SEXP st
   UNPROTECT(1);
   return r_state;
 }
-void discrete_leloup_goldbeter_noisy_rhs(discrete_leloup_goldbeter_noisy_internal* internal, size_t step, double * state, double * state_next, double * output) {
+void deriv_leloup_goldbeter_rhs(deriv_leloup_goldbeter_internal* internal, double t, double * state, double * dstatedt, double * output) {
   double M_T = state[0];
   double M_P = state[1];
   double T_0 = state[2];
@@ -485,45 +462,32 @@ void discrete_leloup_goldbeter_noisy_rhs(discrete_leloup_goldbeter_noisy_interna
   double P_2 = state[7];
   double C = state[8];
   double C_N = state[9];
-  double current_hour = step * internal->STEP_HOURS;
-  double inc_hour10 = internal->k_1 * C - internal->k_2 * C_N - internal->k_d * C_N;
-  double inc_hour3 = internal->k_sT * M_T + internal->V_2T * T_1 / (double) (internal->K_p + T_1) - internal->k_d * T_0 - internal->V_1T * T_0 / (double) (internal->K_p + T_0);
-  double inc_hour4 = internal->V_1T * T_0 / (double) (internal->K_p + T_0) + internal->V_4T * T_2 / (double) (internal->K_p + T_2) - internal->k_d * T_1 - internal->V_2T * T_1 / (double) (internal->K_p + T_1) - internal->V_3T * T_1 / (double) (internal->K_p + T_1);
-  double inc_hour6 = internal->k_sP * M_P + internal->V_2P * P_1 / (double) (internal->K_p + P_1) - internal->k_d * P_0 - internal->V_1P * P_0 / (double) (internal->K_p + P_0);
-  double inc_hour7 = internal->V_1P * P_0 / (double) (internal->K_p + P_0) + internal->V_4P * P_2 / (double) (internal->K_p + P_2) - internal->k_d * P_1 - internal->V_2P * P_1 / (double) (internal->K_p + P_1) - internal->V_3P * P_1 / (double) (internal->K_p + P_1);
-  double inc_hour8 = internal->V_3P * P_1 / (double) (internal->K_p + P_1) + internal->k_4 * C - internal->k_d * P_2 - internal->k_3 * P_2 * P_2 - internal->V_4P * P_2 / (double) (internal->K_p + P_2) - internal->V_dP * P_2 / (double) (internal->K_dP + P_2);
-  double inc_hour9 = internal->k_3 * P_2 * T_2 + internal->k_2 * C_N - (internal->k_4 * C + internal->k_1 * C + internal->k_d * C);
-  double noise1 = (internal->VsT_NOISE_RATIO > 0 && internal->VsT_NOISE_TYPE == 0 ? fmin(1, fmax(-(1), Rf_rnorm(0, internal->VsT_NOISE_RATIO))) : (internal->VsT_NOISE_RATIO > 0 ? (Rf_runif(-(internal->VsT_NOISE_RATIO), internal->VsT_NOISE_RATIO)) : 0));
-  double noise2 = (internal->VsP_NOISE_RATIO > 0 && internal->VsP_NOISE_TYPE == 0 ? fmin(1, fmax(-(1), Rf_rnorm(0, internal->VsP_NOISE_RATIO))) : (internal->VsP_NOISE_RATIO > 0 ? (Rf_runif(-(internal->VsP_NOISE_RATIO), internal->VsP_NOISE_RATIO)) : 0));
-  state_next[8] = C + inc_hour9 * internal->STEP_HOURS;
-  state_next[9] = C_N + inc_hour10 * internal->STEP_HOURS;
-  state_next[5] = P_0 + inc_hour6 * internal->STEP_HOURS;
-  state_next[6] = P_1 + inc_hour7 * internal->STEP_HOURS;
-  state_next[7] = P_2 + inc_hour8 * internal->STEP_HOURS;
-  state_next[2] = T_0 + inc_hour3 * internal->STEP_HOURS;
-  state_next[3] = T_1 + inc_hour4 * internal->STEP_HOURS;
-  double V_dT = (current_hour <= internal->LD_HOURS && (fmodr((fintdiv(current_hour, 12)), 2) == 1) ? internal->VdT_ON : internal->VdT_OFF);
-  double V_sP_noise = internal->V_sP * (1 + noise2);
-  double V_sT_noise = internal->V_sT * (1 + noise1);
-  double inc_hour1 = V_sT_noise * pow(internal->K_IT, internal->n) / (double) (pow(internal->K_IT, internal->n) + pow(C_N, internal->n)) - internal->k_d * M_T - internal->V_mT * M_T / (double) (internal->K_mT + M_T);
-  double inc_hour2 = V_sP_noise * pow(internal->K_IP, internal->n) / (double) (pow(internal->K_IP, internal->n) + pow(C_N, internal->n)) - internal->k_d * M_P - internal->V_mP * M_P / (double) (internal->K_mP + M_P);
-  double inc_hour5 = internal->V_3T * T_1 / (double) (internal->K_p + T_1) + internal->k_4 * C - internal->k_d * T_2 - internal->k_3 * P_2 * T_2 - internal->V_4T * T_2 / (double) (internal->K_p + T_2) - V_dT * T_2 / (double) (internal->K_dT + T_2);
-  state_next[1] = M_P + inc_hour2 * internal->STEP_HOURS;
-  state_next[0] = M_T + inc_hour1 * internal->STEP_HOURS;
-  state_next[4] = T_2 + inc_hour5 * internal->STEP_HOURS;
+  double current_hour = t;
+  dstatedt[8] = internal->k_3 * P_2 * T_2 + internal->k_2 * C_N - (internal->k_4 * C + internal->k_1 * C + internal->k_d * C);
+  dstatedt[9] = internal->k_1 * C - internal->k_2 * C_N - internal->k_d * C_N;
+  dstatedt[1] = internal->V_sP * pow(internal->K_IP, internal->n) / (double) (pow(internal->K_IP, internal->n) + pow(C_N, internal->n)) - internal->k_d * M_P - internal->V_mP * M_P / (double) (internal->K_mP + M_P);
+  dstatedt[0] = internal->V_sT * pow(internal->K_IT, internal->n) / (double) (pow(internal->K_IT, internal->n) + pow(C_N, internal->n)) - internal->k_d * M_T - internal->V_mT * M_T / (double) (internal->K_mT + M_T);
+  dstatedt[5] = internal->k_sP * M_P + internal->V_2P * P_1 / (double) (internal->K_p + P_1) - internal->k_d * P_0 - internal->V_1P * P_0 / (double) (internal->K_p + P_0);
+  dstatedt[6] = internal->V_1P * P_0 / (double) (internal->K_p + P_0) + internal->V_4P * P_2 / (double) (internal->K_p + P_2) - internal->k_d * P_1 - internal->V_2P * P_1 / (double) (internal->K_p + P_1) - internal->V_3P * P_1 / (double) (internal->K_p + P_1);
+  dstatedt[7] = internal->V_3P * P_1 / (double) (internal->K_p + P_1) + internal->k_4 * C - internal->k_d * P_2 - internal->k_3 * P_2 * T_2 - internal->V_4P * P_2 / (double) (internal->K_p + P_2) - internal->V_dP * P_2 / (double) (internal->K_dP + P_2);
+  dstatedt[2] = internal->k_sT * M_T + internal->V_2T * T_1 / (double) (internal->K_p + T_1) - internal->k_d * T_0 - internal->V_1T * T_0 / (double) (internal->K_p + T_0);
+  dstatedt[3] = internal->V_1T * T_0 / (double) (internal->K_p + T_0) + internal->V_4T * T_2 / (double) (internal->K_p + T_2) - internal->k_d * T_1 - internal->V_2T * T_1 / (double) (internal->K_p + T_1) - internal->V_3T * T_1 / (double) (internal->K_p + T_1);
+  double V_dT = (current_hour >= internal->LD_HOURS || (fmodr((fintdiv(current_hour, 12)), 2) == 1) ? internal->VdT_OFF : internal->VdT_ON);
+  dstatedt[4] = internal->V_3T * T_1 / (double) (internal->K_p + T_1) + internal->k_4 * C - internal->k_d * T_2 - internal->k_3 * P_2 * T_2 - internal->V_4T * T_2 / (double) (internal->K_p + T_2) - V_dT * T_2 / (double) (internal->K_dT + T_2);
 }
-void discrete_leloup_goldbeter_noisy_rhs_dde(size_t n_eq, size_t step, double * state, double * state_next, size_t n_out, double * output, void * internal) {
-  discrete_leloup_goldbeter_noisy_rhs((discrete_leloup_goldbeter_noisy_internal*)internal, step, state, state_next, output);
+void deriv_leloup_goldbeter_rhs_dde(size_t neq, double t, double * state, double * dstatedt, void * internal) {
+  deriv_leloup_goldbeter_rhs((deriv_leloup_goldbeter_internal*)internal, t, state, dstatedt, NULL);
 }
-SEXP discrete_leloup_goldbeter_noisy_rhs_r(SEXP internal_p, SEXP step, SEXP state) {
-  SEXP state_next = PROTECT(allocVector(REALSXP, LENGTH(state)));
-  discrete_leloup_goldbeter_noisy_internal *internal = discrete_leloup_goldbeter_noisy_get_internal(internal_p, 1);
+void deriv_leloup_goldbeter_rhs_desolve(int * neq, double * t, double * state, double * dstatedt, double * output, int * np) {
+  deriv_leloup_goldbeter_rhs(deriv_leloup_goldbeter_internal_ds, *t, state, dstatedt, output);
+}
+SEXP deriv_leloup_goldbeter_rhs_r(SEXP internal_p, SEXP t, SEXP state) {
+  SEXP dstatedt = PROTECT(allocVector(REALSXP, LENGTH(state)));
+  deriv_leloup_goldbeter_internal *internal = deriv_leloup_goldbeter_get_internal(internal_p, 1);
   double *output = NULL;
-  GetRNGstate();
-  discrete_leloup_goldbeter_noisy_rhs(internal, scalar_int(step, "step"), REAL(state), REAL(state_next), output);
-  PutRNGstate();
+  deriv_leloup_goldbeter_rhs(internal, scalar_real(t, "t"), REAL(state), REAL(dstatedt), output);
   UNPROTECT(1);
-  return state_next;
+  return dstatedt;
 }
 discrete_leloup_goldbeter_internal* discrete_leloup_goldbeter_get_internal(SEXP internal_p, int closed_error) {
   discrete_leloup_goldbeter_internal *internal = NULL;
@@ -561,14 +525,14 @@ SEXP discrete_leloup_goldbeter_create(SEXP user) {
   internal->K_p = 2;
   internal->k_sP = 0.90000000000000002;
   internal->k_sT = 0.90000000000000002;
-  internal->LD_HOURS = 120;
+  internal->LD_HOURS = 240;
   internal->M_P_ini = 0;
   internal->M_T_ini = 0;
   internal->n = 4;
   internal->P_0_ini = 0;
   internal->P_1_ini = 0;
   internal->P_2_ini = 0;
-  internal->STEP_HOURS = 0.10000000000000001;
+  internal->STEP_HOURS = 0.01;
   internal->T_0_ini = 0;
   internal->T_1_ini = 0;
   internal->T_2_ini = 0;
@@ -847,7 +811,7 @@ void discrete_leloup_goldbeter_rhs(discrete_leloup_goldbeter_internal* internal,
   double inc_hour4 = internal->V_1T * T_0 / (double) (internal->K_p + T_0) + internal->V_4T * T_2 / (double) (internal->K_p + T_2) - internal->k_d * T_1 - internal->V_2T * T_1 / (double) (internal->K_p + T_1) - internal->V_3T * T_1 / (double) (internal->K_p + T_1);
   double inc_hour6 = internal->k_sP * M_P + internal->V_2P * P_1 / (double) (internal->K_p + P_1) - internal->k_d * P_0 - internal->V_1P * P_0 / (double) (internal->K_p + P_0);
   double inc_hour7 = internal->V_1P * P_0 / (double) (internal->K_p + P_0) + internal->V_4P * P_2 / (double) (internal->K_p + P_2) - internal->k_d * P_1 - internal->V_2P * P_1 / (double) (internal->K_p + P_1) - internal->V_3P * P_1 / (double) (internal->K_p + P_1);
-  double inc_hour8 = internal->V_3P * P_1 / (double) (internal->K_p + P_1) + internal->k_4 * C - internal->k_d * P_2 - internal->k_3 * P_2 * P_2 - internal->V_4P * P_2 / (double) (internal->K_p + P_2) - internal->V_dP * P_2 / (double) (internal->K_dP + P_2);
+  double inc_hour8 = internal->V_3P * P_1 / (double) (internal->K_p + P_1) + internal->k_4 * C - internal->k_d * P_2 - internal->k_3 * P_2 * T_2 - internal->V_4P * P_2 / (double) (internal->K_p + P_2) - internal->V_dP * P_2 / (double) (internal->K_dP + P_2);
   double inc_hour9 = internal->k_3 * P_2 * T_2 + internal->k_2 * C_N - (internal->k_4 * C + internal->k_1 * C + internal->k_d * C);
   state_next[8] = C + inc_hour9 * internal->STEP_HOURS;
   state_next[9] = C_N + inc_hour10 * internal->STEP_HOURS;
@@ -858,7 +822,7 @@ void discrete_leloup_goldbeter_rhs(discrete_leloup_goldbeter_internal* internal,
   state_next[7] = P_2 + inc_hour8 * internal->STEP_HOURS;
   state_next[2] = T_0 + inc_hour3 * internal->STEP_HOURS;
   state_next[3] = T_1 + inc_hour4 * internal->STEP_HOURS;
-  double V_dT = (current_hour <= internal->LD_HOURS && (fmodr((fintdiv(current_hour, 12)), 2) == 1) ? internal->VdT_ON : internal->VdT_OFF);
+  double V_dT = (current_hour >= internal->LD_HOURS || (fmodr((fintdiv(current_hour, 12)), 2) == 1) ? internal->VdT_OFF : internal->VdT_ON);
   double inc_hour5 = internal->V_3T * T_1 / (double) (internal->K_p + T_1) + internal->k_4 * C - internal->k_d * T_2 - internal->k_3 * P_2 * T_2 - internal->V_4T * T_2 / (double) (internal->K_p + T_2) - V_dT * T_2 / (double) (internal->K_dT + T_2);
   state_next[4] = T_2 + inc_hour5 * internal->STEP_HOURS;
 }
@@ -989,6 +953,20 @@ double fmodr(double x, double y) {
 }
 double fintdiv(double x, double y) {
   return floor(x / y);
+}
+double scalar_real(SEXP x, const char * name) {
+  if (Rf_length(x) != 1) {
+    Rf_error("Expected a scalar for '%s'", name);
+  }
+  double ret = 0.0;
+  if (TYPEOF(x) == INTSXP) {
+    ret = INTEGER(x)[0];
+  } else if (TYPEOF(x) == REALSXP) {
+    ret = REAL(x)[0];
+  } else {
+    Rf_error("Expected a numeric value for '%s'", name);
+  }
+  return ret;
 }
 int scalar_int(SEXP x, const char * name) {
   if (Rf_length(x) != 1) {

@@ -40,7 +40,7 @@ SNR is not available (NA). p-value = LS p-value.
 }
 \examples{
 # Generate a period = 50 sine wave data with some noise (even spacing)
-n <- 5000
+n <- 1000
 time <- seq(1, n, by = 1)
 ts_data <- sin(2 * pi * time / 50) + rnorm(n, sd = 0.5)
 compute_period(ts_data)

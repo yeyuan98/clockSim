@@ -13,8 +13,16 @@
 #' # TODO
 getOdinGen <- function(){
   return(list(
-    discrete_LG_noisy = discrete_leloup_goldbeter_noisy,
-    discrete_LG = discrete_leloup_goldbeter
+    discrete_LG = discrete_leloup_goldbeter,
+    continuous_LG = deriv_leloup_goldbeter
   ))
 }
 
+getModel_LG_Discrete <- function(){
+  # User needs to provide common parameters here
+}
+
+testModelStepSize <- function(){
+  # User provide the model, the step size parameter name, and step sizes to test
+  # Plot a diagnostic convergence plot and propose a suitable step size
+}

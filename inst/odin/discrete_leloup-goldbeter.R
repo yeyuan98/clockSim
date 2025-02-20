@@ -20,10 +20,10 @@
 # }
 
 # Time step in hours
-STEP_HOURS <- user(0.1)
+STEP_HOURS <- user(0.01)
 
 # LD cycle parameters
-LD_HOURS <- user(120)
+LD_HOURS <- user(240)
 VdT_ON <- user(6.0)
 VdT_OFF <- user(3.0)
 
@@ -32,7 +32,7 @@ VdT_OFF <- user(3.0)
 #   TIM protein degradation rate update
 current_hour <- step * STEP_HOURS
 V_dT <- 
-  if (current_hour <= LD_HOURS && ((current_hour %/% 12) %% 2 == 1)) VdT_ON else VdT_OFF
+  if (current_hour >= LD_HOURS || ((current_hour %/% 12) %% 2 == 1)) VdT_OFF else VdT_ON
 
 #   mRNA of TIM and PER
 inc_hour1 <- 
@@ -92,7 +92,7 @@ inc_hour8 <-
   V_3P*P_1 / (K_p + P_1) + 
   k_4*C -
   k_d*P_2 - 
-  k_3*P_2*P_2 - 
+  k_3*P_2*T_2 - 
   V_4P*P_2 / (K_p + P_2) - 
   V_dP*P_2 / (K_dP + P_2)
 update(P_2) <- P_2 + inc_hour8*STEP_HOURS
