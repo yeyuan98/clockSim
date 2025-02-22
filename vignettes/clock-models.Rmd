@@ -1,5 +1,5 @@
 ---
-title: "Simulation of the circadian clock"
+title: "Models for circadian clock simulation"
 author: "Ye Yuan"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -19,11 +19,10 @@ knitr::opts_chunk$set(
 ```
 
 This vignette documents workflow for circadian clock simulation provided by 
-this package. In this vignette, we focus on the classical Leloup & Goldbeter 
-(LG) model of the Drosophila circadian clock focusing on the PER-TIM
-negative feedback loop. Refer to the package documentation to the different models 
-that this package implemented. Propose addition of new models via Github issues 
-(or better yet PRs).
+this package. We focus on the classical Leloup & Goldbeter (LG) model of the 
+Drosophila circadian clock of the PER-TIM negative feedback loop. 
+Refer to the package documentation to the different models that this package 
+implemented. Propose addition of new models via Github issues (or PRs).
 
 Available models in the package:
 
@@ -95,12 +94,12 @@ run_eta(model, times)
 Discrete LG model solves the LG model in difference equation form (iterate over 
 fixed time steps). To run the model, you need to explicitly provide time step 
 length. Model convergence requires sufficiently small time step setting, and 
-0.01hr is adequate for default parameters.
+0.002/0.004hr is adequate for default parameters.
 
 Below, I show how to run the discrete model and plot its behavior and compute 
 period statistics.
 
-```{r setup}
+```{r}
 library(clockSim)
 model <- getOdinGen()$discrete_LG$new()
 

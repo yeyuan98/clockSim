@@ -113,28 +113,27 @@ update(C_N) <- C_N + inc_hour10*STEP_HOURS
 # Initial states
 #   All states could be user defined.
 #   step is the internal counting variable enabled by default
-initial(M_T) <- M_T_ini
-initial(M_P) <- M_P_ini
-initial(T_0) <- T_0_ini
-initial(T_1) <- T_1_ini
-initial(T_2) <- T_2_ini
-initial(P_0) <- P_0_ini
-initial(P_1) <- P_1_ini
-initial(P_2) <- P_2_ini
-initial(C) <- C_ini
-initial(C_N) <- C_N_ini
+initial(M_T) <- setUserInitial_M_T
+initial(M_P) <- setUserInitial_M_P
+initial(T_0) <- setUserInitial_T_0
+initial(T_1) <- setUserInitial_T_1
+initial(T_2) <- setUserInitial_T_2
+initial(P_0) <- setUserInitial_P_0
+initial(P_1) <- setUserInitial_P_1
+initial(P_2) <- setUserInitial_P_2
+initial(C) <- setUserInitial_C
+initial(C_N) <- setUserInitial_C_N
 
-# User configurable initial states
-M_T_ini <- user(0)
-M_P_ini <- user(0)
-T_0_ini <- user(0)
-T_1_ini <- user(0)
-T_2_ini <- user(0)
-P_0_ini <- user(0)
-P_1_ini <- user(0)
-P_2_ini <- user(0)
-C_ini <- user(0)
-C_N_ini <- user(0)
+setUserInitial_M_T <- user(0)
+setUserInitial_M_P <- user(0)
+setUserInitial_T_0 <- user(0)
+setUserInitial_T_1 <- user(0)
+setUserInitial_T_2 <- user(0)
+setUserInitial_P_0 <- user(0)
+setUserInitial_P_1 <- user(0)
+setUserInitial_P_2 <- user(0)
+setUserInitial_C <- user(0)
+setUserInitial_C_N <- user(0)
 
 # Parameters, following '00 paper
 V_sP <- user(1.1)

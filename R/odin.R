@@ -18,12 +18,15 @@ deriv_leloup_goldbeter_ <- R6::R6Class(
       rhs_desolve = "deriv_leloup_goldbeter_rhs_desolve",
       initmod_desolve = "deriv_leloup_goldbeter_initmod_desolve"),
     dll = "clockSim",
-    user = c("C_ini", "C_N_ini", "k_1", "k_2", "k_3", "k_4", "k_d", "K_dP",
-             "K_dT", "K_IP", "K_IT", "K_mP", "K_mT", "K_p", "k_sP", "k_sT",
-             "LD_HOURS", "M_P_ini", "M_T_ini", "n", "P_0_ini", "P_1_ini",
-             "P_2_ini", "T_0_ini", "T_1_ini", "T_2_ini", "V_1P", "V_1T",
-             "V_2P", "V_2T", "V_3P", "V_3T", "V_4P", "V_4T", "V_dP", "V_mP",
-             "V_mT", "V_sP", "V_sT", "VdT_OFF", "VdT_ON"),
+    user = c("k_1", "k_2", "k_3", "k_4", "k_d", "K_dP", "K_dT", "K_IP",
+             "K_IT", "K_mP", "K_mT", "K_p", "k_sP", "k_sT", "LD_HOURS", "n",
+             "setUserInitial_C", "setUserInitial_C_N", "setUserInitial_M_P",
+             "setUserInitial_M_T", "setUserInitial_P_0",
+             "setUserInitial_P_1", "setUserInitial_P_2",
+             "setUserInitial_T_0", "setUserInitial_T_1",
+             "setUserInitial_T_2", "V_1P", "V_1T", "V_2P", "V_2T", "V_3P",
+             "V_3T", "V_4P", "V_4T", "V_dP", "V_mP", "V_mT", "V_sP", "V_sT",
+             "VdT_OFF", "VdT_ON"),
 
     ## This is never called, but is used to ensure that R finds our
     ## symbols that we will use from the package; without this they
@@ -138,12 +141,15 @@ discrete_leloup_goldbeter_ <- R6::R6Class(
     cfuns = list(
       rhs_dde = "discrete_leloup_goldbeter_rhs_dde"),
     dll = "clockSim",
-    user = c("C_ini", "C_N_ini", "k_1", "k_2", "k_3", "k_4", "k_d", "K_dP",
-             "K_dT", "K_IP", "K_IT", "K_mP", "K_mT", "K_p", "k_sP", "k_sT",
-             "LD_HOURS", "M_P_ini", "M_T_ini", "n", "P_0_ini", "P_1_ini",
-             "P_2_ini", "STEP_HOURS", "T_0_ini", "T_1_ini", "T_2_ini",
-             "V_1P", "V_1T", "V_2P", "V_2T", "V_3P", "V_3T", "V_4P", "V_4T",
-             "V_dP", "V_mP", "V_mT", "V_sP", "V_sT", "VdT_OFF", "VdT_ON"),
+    user = c("k_1", "k_2", "k_3", "k_4", "k_d", "K_dP", "K_dT", "K_IP",
+             "K_IT", "K_mP", "K_mT", "K_p", "k_sP", "k_sT", "LD_HOURS", "n",
+             "setUserInitial_C", "setUserInitial_C_N", "setUserInitial_M_P",
+             "setUserInitial_M_T", "setUserInitial_P_0",
+             "setUserInitial_P_1", "setUserInitial_P_2",
+             "setUserInitial_T_0", "setUserInitial_T_1",
+             "setUserInitial_T_2", "STEP_HOURS", "V_1P", "V_1T", "V_2P",
+             "V_2T", "V_3P", "V_3T", "V_4P", "V_4T", "V_dP", "V_mP", "V_mT",
+             "V_sP", "V_sT", "VdT_OFF", "VdT_ON"),
 
     ## This is never called, but is used to ensure that R finds our
     ## symbols that we will use from the package; without this they
