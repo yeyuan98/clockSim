@@ -4,7 +4,7 @@
 \alias{compute_period}
 \title{Compute periodicity of time series}
 \usage{
-compute_period(ts_vector, ts_time = NULL, method = "fft")
+compute_period(ts_vector, ts_time = NULL, method = "fft", verbose = FALSE, ...)
 }
 \arguments{
 \item{ts_vector}{Numeric vector of time series}
@@ -12,6 +12,10 @@ compute_period(ts_vector, ts_time = NULL, method = "fft")
 \item{ts_time}{Numeric vector of time points (if \code{NULL} use "step" unit)}
 
 \item{method}{Period calculation method.}
+
+\item{verbose}{Whether to print verbose messages on, e.g., time resolution.}
+
+\item{...}{Passed to the specific method for finer control, see details.}
 }
 \value{
 Named vector of length 4 (period, power, snr, p.value).
@@ -30,12 +34,15 @@ it requires even time spacing.
 If \code{ts_time} is \code{NULL}, assume even time spacing and period unit will be
 in the (implicitly provided) time spacing of the time series vector.
 
-Power, SNR, and p-value of the period detection are method-specific:
+Power, SNR, p-value, and ellipsis of the period detection are method-specific:
 \enumerate{
-\item \code{fft}: power = Spectrum power of the peak. \
+\item \code{fft}: power = Spectrum power of the peak.
 SNR = (power of peak)/(median power). p-value is not available (NA).
-\item \code{lomb}: power = LS power of the peak. \
+In this case, \code{...} is not used
+\item \code{lomb}: power = LS power of the peak.
 SNR is not available (NA). p-value = LS p-value.
+In this case, \code{...} is forwarded to \code{lomb::lsp()}. Note: It is assumed that
+the period of interest is >1. Otherwise result will be incorrect.
 }
 }
 \examples{

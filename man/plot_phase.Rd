@@ -23,5 +23,5 @@ Provides convenience function to plot simulation trajectory of result from
 one run in 2-D phase space.
 }
 \examples{
-# TODO
+vignette("clock-models", "clockSim")
 }

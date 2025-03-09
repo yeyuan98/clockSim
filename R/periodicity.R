@@ -14,17 +14,22 @@
 #' If `ts_time` is `NULL`, assume even time spacing and period unit will be 
 #' in the (implicitly provided) time spacing of the time series vector.
 #' 
-#' Power, SNR, and p-value of the period detection are method-specific:
+#' Power, SNR, p-value, and ellipsis of the period detection are method-specific:
 #' 
-#' 1. `fft`: power = Spectrum power of the peak. \
-#' SNR = (power of peak)/(median power). p-value is not available (NA).
-#' 2. `lomb`: power = LS power of the peak. \
-#' SNR is not available (NA). p-value = LS p-value.
+#' 1. `fft`: power = Spectrum power of the peak. 
+#' SNR = (power of peak)/(median power). p-value is not available (NA). 
+#' In this case, `...` is not used
+#' 2. `lomb`: power = LS power of the peak. 
+#' SNR is not available (NA). p-value = LS p-value. 
+#' In this case, `...` is forwarded to `lomb::lsp()`. Note: It is assumed that 
+#' the period of interest is >1. Otherwise result will be incorrect.
 #' 
 #'
 #' @param ts_vector Numeric vector of time series
 #' @param ts_time Numeric vector of time points (if `NULL` use "step" unit)
 #' @param method Period calculation method.
+#' @param verbose Whether to print verbose messages on, e.g., time resolution.
+#' @param ... Passed to the specific method for finer control, see details.
 #' 
 #' @returns Named vector of length 4 (period, power, snr, p.value).
 #' @export
@@ -40,7 +45,7 @@
 #' s <- sample(1:n, n/3)
 #' compute_period(ts_data[s], time[s], method = "lomb")
 compute_period <- 
-  function(ts_vector, ts_time = NULL, method = "fft"){
+  function(ts_vector, ts_time = NULL, method = "fft", verbose = FALSE, ...){
     switch(
       method,
       fft = {
@@ -56,15 +61,27 @@ compute_period <-
         # Compute SNR
         noise_floor <- stats::median(power)
         snr <- peak_power / noise_floor
+        # Output verbose message
+        if (verbose){
+          rlang::inform(paste0(
+            "FFT period grid = ", paste(1/freq, collapse = ",")))
+        }
+        # Return
         c(period = period, power = peak_power, snr = snr, p.value = NA)
       },
       lomb = {
         if (is.null(ts_time)) ts_time <- seq_along(ts_vector)
-        lsp_result <- lomb::lsp(ts_vector, ts_time, plot = FALSE)
-        period <- 1 / lsp_result$peak.at[1]
+        lsp_result <- lomb::lsp(ts_vector, ts_time, plot = FALSE, ...)
+        period <- 1 / lsp_result$peak.at[lsp_result$peak.at < 1]
         peak_power <- lsp_result$peak
         snr <- NA
         p.value <- lsp_result$p.value
+        # Output verbose message
+        if (verbose){
+          rlang::inform(paste0(
+            "LOMB scan grid = ", paste(lsp_result$scanned, collapse = ",")))
+        }
+        # Return
         c(period = period, power = peak_power, snr = NA, p.value = p.value)
       },
       rlang::abort("Unsupported method.")

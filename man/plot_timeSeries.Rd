@@ -40,5 +40,5 @@ check of parameters Make sure yourself that parameters make sense (e.g.,
 end-start time must be longer than sample_time and tick_time, etc.)
 }
 \examples{
-# TODO
+vignette("clock-models", "clockSim")
 }
