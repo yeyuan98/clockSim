@@ -12,7 +12,9 @@
 #' @export
 #'
 #' @examples
-#' # TODO
+#' model <- getOdinGen()$continuous_LG$new()
+#' time_hr <- seq(from = 0, to = 24 * 20, by = 1)
+#' run_eta(model, time_hr) # Tell you median run time of simulation
 run_eta <- function(odin_model, ...){
   bm <- bench::mark(
     odin_model$run(...), min_time = 2, min_iterations = 3)
@@ -47,7 +49,7 @@ run_eta <- function(odin_model, ...){
 #' @export
 #'
 #' @examples
-#' # TODO
+#' vignette("clock-models", "clockSim")
 plot_phase <- function(df_result, x, y, time = NULL){
   
   # get columns to plot
@@ -109,7 +111,7 @@ plot_phase <- function(df_result, x, y, time = NULL){
 #' @export
 #'
 #' @examples
-#' # TODO
+#' vignette("clock-models", "clockSim")
 plot_timeSeries <- 
   function(df_result, start_time, end_time, 
            sample_time, tick_time, ...){

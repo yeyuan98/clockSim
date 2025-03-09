@@ -19,5 +19,7 @@ Perform test runs of an Odin model with the specified run parameters and
 return measured run time for planning large-scale simulation repeats and/or model parameter scans.
 }
 \examples{
-# TODO
+model <- getOdinGen()$continuous_LG$new()
+time_hr <- seq(from = 0, to = 24 * 20, by = 1)
+run_eta(model, time_hr) # Tell you median run time of simulation
 }

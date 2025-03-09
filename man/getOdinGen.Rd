@@ -15,5 +15,7 @@ This function is intended for advanced usage only; normally calling
 other helper functions will suffice for simulation.
 }
 \examples{
-# TODO
+names(getOdinGen()) # All available models
+vignette("clock-models", "clockSim")
+vignette("noisy-LG-model", "clockSim") # Noise-incorporated model using SDE simulation
 }

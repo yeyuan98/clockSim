@@ -39,5 +39,5 @@ Grid is a data frame whose columns are model parameters.
 See \code{model$contents()} for tunable parameters.
 }
 \examples{
-# TODO
+vignette("grid-scan", "clockSim")
 }

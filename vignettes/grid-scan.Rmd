@@ -147,10 +147,10 @@ stat.fn <- function(raw_run, reference = default_attractor){
   # Subset only the last 240 time points - should be stabilized
   raw_run <- raw_run[(nrow(raw_run)-240):nrow(raw_run),]
   # Compute normalized RMSE
-  nrmse <- compute_rmse(raw_run, default_attractor, normalize = "range")
+  nrmse <- compute_rmse(raw_run, reference, normalize = "range")
   nrmse <- max(nrmse)
   # Compute cosine similarity
-  cos <- compute_cosine(raw_run, default_attractor)
+  cos <- compute_cosine(raw_run, reference)
   cos <- min(cos)
   # Return
   c(converged = succ, nrmse = nrmse, cos = cos)
