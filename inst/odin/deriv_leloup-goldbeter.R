@@ -3,7 +3,7 @@
 #   2000 DOI: https://doi.org/10.1002/(sici)1521-1878(200001)22:1%3C84::aid-bies13%3E3.0.co;2-i
 
 # LD cycle parameters
-LD_HOURS <- user(240)
+LD_HOURS <- user(720)
 VdT_ON <- user(6.0)
 VdT_OFF <- user(3.0)
 

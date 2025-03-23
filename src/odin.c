@@ -288,7 +288,7 @@ SEXP deriv_leloup_goldbeter_create(SEXP user) {
   internal->K_p = 2;
   internal->k_sP = 0.90000000000000002;
   internal->k_sT = 0.90000000000000002;
-  internal->LD_HOURS = 240;
+  internal->LD_HOURS = 720;
   internal->n = 4;
   internal->setUserInitial_C = 0;
   internal->setUserInitial_C_N = 0;
@@ -625,7 +625,7 @@ SEXP discrete_leloup_goldbeter_create(SEXP user) {
   internal->K_p = 2;
   internal->k_sP = 0.90000000000000002;
   internal->k_sT = 0.90000000000000002;
-  internal->LD_HOURS = 240;
+  internal->LD_HOURS = 720;
   internal->n = 4;
   internal->setUserInitial_C = 0;
   internal->setUserInitial_C_N = 0;
@@ -975,7 +975,7 @@ SEXP discreteNoisy_leloup_goldbeter_create(SEXP user) {
   internal->K_p_conc = 2;
   internal->k_sP = 0.90000000000000002;
   internal->k_sT = 0.90000000000000002;
-  internal->LD_HOURS = 240;
+  internal->LD_HOURS = 720;
   internal->n = 4;
   internal->NoiseVariance_C = 0;
   internal->NoiseVariance_C_N = 0;

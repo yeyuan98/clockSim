@@ -69,17 +69,17 @@ plot(plot_phase(res_cont, M_T, C_N))
 #     subsample the result to 1hr precision for plotting (already TRUE)
 #     X-axis time tick every 24hr
 #     faceted plot of M_T and C_N states (see above)
-#     plot 10-20day (first 10d DD constant condition)
+#     plot 30-40day (first 10d DD constant condition)
 res_cont$time <- times
-plot(plot_timeSeries(res_cont, 240, 24*20, 1, 24, M_T, C_N))
+plot(plot_timeSeries(res_cont, 24*30, 24*40, 1, 24, M_T, C_N))
 #     plot 0-10day (first 10d LD condition)
 plot(plot_timeSeries(res_cont, 0, 240, 1, 24, M_T, C_N))
 
 # Compute clock period and power
-#   Using 10-20day data (i.e., first 10-day in DD constant condition)
+#   Using 30-40day data (i.e., first 10-day in DD constant condition)
 #     provide only M_T series; other series are locked in phase
-print(compute_period(res_cont$M_T[240:480])) # FFT method
-print(compute_period(res_cont$M_T[240:480], method = "lomb")) # LS periodogram
+print(compute_period(res_cont$M_T[(24*30):(24*40)])) # FFT method
+print(compute_period(res_cont$M_T[(24*30):(24*40)], method = "lomb")) # LS periodogram
 ```
 
 How fast does the simulation run? `run_eta` provides a simple wrapper for reliable timing of the simulation (median taken from repeated calls).
@@ -118,12 +118,12 @@ res_dis$time <- res_dis$step*sim_step_hours
 #     subset to 1-hour step to reduce unnecessary load in plotting
 plot(plot_phase(res_dis |> dplyr::filter(time %% 1 == 0), M_T, C_N))
 #   Time series
-plot(plot_timeSeries(res_dis, 240, 24*20, 1, 24, M_T, C_N))
+plot(plot_timeSeries(res_dis, 24*30, 24*40, 1, 24, M_T, C_N))
 plot(plot_timeSeries(res_dis, 0, 240, 1, 24, M_T, C_N))
 
 # Compute clock period and power
-print(compute_period(res_dis$M_T[240:480])) # FFT method
-print(compute_period(res_dis$M_T[240:480], method = "lomb")) # LS periodogram
+print(compute_period(res_dis$M_T[(24*30):(24*40)])) # FFT method
+print(compute_period(res_dis$M_T[(24*30):(24*40)], method = "lomb")) # LS periodogram
 ```
 
 How fast does the simulation run? Apparently, it depends heavily on time step.

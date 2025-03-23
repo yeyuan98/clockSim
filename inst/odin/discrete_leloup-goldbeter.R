@@ -23,7 +23,7 @@
 STEP_HOURS <- user(0.01)
 
 # LD cycle parameters
-LD_HOURS <- user(240)
+LD_HOURS <- user(720)
 VdT_ON <- user(6.0)
 VdT_OFF <- user(3.0)
 

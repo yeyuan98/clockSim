@@ -55,7 +55,7 @@ grid_scan <- function(model_gen,
     # Serial lapply
     model <- model_gen$new()
     lapply(1:nrow(grid), \(idx) {
-      model$set_user(user = grid[idx, ] |> as.list())
+      model$set_user(user = grid[idx, ,drop=FALSE] |> as.list())
       res <- do.call(model$run, elli)
       return(apply.fn(res))
     })

@@ -34,7 +34,7 @@ mulNM <- 6.02214076E23 * 1E-9 * 1E-15 * cellDimUM^3
 STEP_HOURS <- user(0.001)
 
 # LD cycle parameters
-LD_HOURS <- user(240)
+LD_HOURS <- user(720)
 VdT_ON_conc <- user(6.0)
 VdT_OFF_conc <- user(3.0)
 VdT_ON <- VdT_ON_conc * mulNM
