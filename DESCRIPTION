@@ -1,14 +1,23 @@
 Package: clockSim
-Title: Simulation of the Circadian Clock Gene Network
-Version: 0.0.0.9004
+Title: Streamlined Simulation of Circadian Gene Networks
+Version: 0.1.0
 Authors@R: 
     person("Ye", "Yuan", , "yeyu@umich.edu", 
-    role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9641-9102"))
-Description: A preconfigured simulation workflow for the circadian clock gene network.
+    role = c("aut", "cre", "cph"), comment = c(ORCID = "0000-0001-9641-9102"))
+Description: A user-friendly workflow for simulating circadian clock gene networks. 
+  Despite decades of advances in modeling circadian clock dynamics, 
+  the lack of accessible tools for reproducible simulation workflows 
+  hinders the integration of computational modeling with experimental studies. 
+  clockSim addresses this gap by providing models and helper functions 
+  with step-by-step vignettes. This package opens up system-level exploration 
+  of the circadian clock to wet-lab experimentalists, and future development 
+  will include additional clock architectures and other gene circuit models.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
+Depends:
+    R (>= 4.1.0)
 Imports: 
     bench,
     dde,
@@ -23,3 +32,5 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+URL: https://github.com/yeyuan98/clockSim
+BugReports: https://github.com/yeyuan98/clockSim/issues

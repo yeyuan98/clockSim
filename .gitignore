@@ -4,3 +4,7 @@
 .Ruserdata
 .Rprofile
 inst/doc
+
+# Compiled source files in src/
+src/*.o
+src/*.dll

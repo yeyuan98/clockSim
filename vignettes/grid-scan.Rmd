@@ -97,7 +97,7 @@ summary <- res |>
 # Only keep min/mean/max
 summary <- summary[c(1,4,6),]
 # Add on mean+N*spread, N=2,3,...,N_max
-N_max <- 5 # For larger scan increase this. CRAN=3
+N_max <- 3 # For larger scan increase this. CRAN=3
 get_multiples <- function(s, k) {
   # Extract components
   min <- s[1, ]

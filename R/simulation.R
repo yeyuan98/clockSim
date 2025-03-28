@@ -24,7 +24,3 @@ getOdinGen <- function(){
     )
   ))
 }
-
-getModel_LG_Discrete <- function(){
-  # User needs to provide common parameters here
-}

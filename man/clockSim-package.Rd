@@ -3,12 +3,20 @@
 \docType{package}
 \name{clockSim-package}
 \alias{clockSim-package}
-\title{clockSim: Simulation of the Circadian Clock Gene Network}
+\title{clockSim: Streamlined Simulation of Circadian Gene Networks}
 \description{
-A preconfigured simulation workflow for the circadian clock gene network.
+A user-friendly workflow for simulating circadian clock gene networks. Despite decades of advances in modeling circadian clock dynamics, the lack of accessible tools for reproducible simulation workflows hinders the integration of computational modeling with experimental studies. clockSim addresses this gap by providing models and helper functions with step-by-step vignettes. This package opens up system-level exploration of the circadian clock to wet-lab experimentalists, and future development will include additional clock architectures and other gene circuit models.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/yeyuan98/clockSim}
+  \item Report bugs at \url{https://github.com/yeyuan98/clockSim/issues}
+}
+
 }
 \author{
-\strong{Maintainer}: Ye Yuan \email{yeyu@umich.edu} (\href{https://orcid.org/0000-0001-9641-9102}{ORCID})
+\strong{Maintainer}: Ye Yuan \email{yeyu@umich.edu} (\href{https://orcid.org/0000-0001-9641-9102}{ORCID}) [copyright holder]
 
 }
 \keyword{internal}
