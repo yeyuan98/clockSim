@@ -2,26 +2,29 @@
 % Please edit documentation in R/clockSim-package.R
 \name{clockSim}
 \alias{clockSim}
-\title{clockSim: Simulation of the Circadian Clock Gene Network.}
+\title{clockSim: Streamlined Simulation of Circadian Gene Networks}
 \description{
 This package provides preconfigured circadian clock gene network simulation
 models based on the Odin simulation engine.
 }
 \details{
-Circadian clock is a paradigm for studying negative-positive feedback
-mechanisms in Biology. Molecular clock, a cell-autonomous
-transcriptional-translational feedback, is one of the best known gene
-network oscillators.
+The circadian clock is a foundational model for studying negative-positive
+feedback mechanisms in biology. The molecular clock—a cell-autonomous
+transcriptional-translational feedback loop—is one of the most
+well-characterized gene network oscillators.
 
-Despite widespread interest on molecular clock research, numerical
-simulation of the clock remains elusive to many if not most wet-lab
-biologists, which hindered generation of novel hypotheses and efficient
-exploration of the clock parameter space.
+Despite widespread interest in molecular clock research,
+numerical simulation of these systems remains inaccessible to many,
+if not most, wet-lab biologists. This gap has hindered the generation of
+novel hypotheses and efficient exploration of the clock’s parameter space.
 
-This package aims to provide a low-friction workflow for molecular clock
-simulation, thereby unleashing the power of in silico exploration to more.
-\subsection{Models}{
+'clockSim' addresses this challenge by providing a low-friction workflow
+for simulating molecular clocks, making in silico exploration accessible
+to a broader audience.
 
-The mypackage functions ...
-}
+Please refer to the package vignettes on workflows provided by 'clockSim'.
+
+The currently implemented models are based on the classical Leloup-Goldbeter
+PER-TIM feedback loop.
+Refer to Leloup and Goldbeter (1998) \url{doi:10.1177/074873098128999934}.
 }
