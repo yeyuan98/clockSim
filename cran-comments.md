@@ -1,5 +1,4 @@
-## R CMD check results
+## Update
+This is a package update. In this version I have:
 
-0 errors | 0 warnings | 1 note
-
-* This is a new release.
+* fixed LTO problems and removed unused variables in the Odin/C code.

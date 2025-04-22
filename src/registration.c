@@ -3,16 +3,16 @@
 #include <stdlib.h> // for NULL
 #include <R_ext/Rdynload.h>
 
-/* FIXME: 
+/*
    Check these declarations against the C/Fortran source code.
 */
 
 /* .C calls */
 extern void deriv_leloup_goldbeter_initmod_desolve(void *);
-extern void deriv_leloup_goldbeter_rhs_dde(void *);
-extern void deriv_leloup_goldbeter_rhs_desolve(void *);
-extern void discrete_leloup_goldbeter_rhs_dde(void *);
-extern void discreteNoisy_leloup_goldbeter_rhs_dde(void *);
+extern void deriv_leloup_goldbeter_rhs_dde(size_t, double, double *, double *, void *);
+extern void deriv_leloup_goldbeter_rhs_desolve(int *, double *, double *, double *, double *, int *);
+extern void discrete_leloup_goldbeter_rhs_dde(size_t, size_t, double *, double *, size_t, double *, void *);
+extern void discreteNoisy_leloup_goldbeter_rhs_dde(size_t, size_t, double *, double *, size_t, double *, void *);
 
 /* .Call calls */
 extern SEXP deriv_leloup_goldbeter_contents(SEXP);
@@ -27,14 +27,14 @@ extern SEXP discrete_leloup_goldbeter_create(SEXP);
 extern SEXP discrete_leloup_goldbeter_initial_conditions(SEXP, SEXP);
 extern SEXP discrete_leloup_goldbeter_metadata(SEXP);
 extern SEXP discrete_leloup_goldbeter_rhs_r(SEXP, SEXP, SEXP);
-extern SEXP discrete_leloup_goldbeter_set_initial(SEXP, SEXP, SEXP, SEXP);
+extern SEXP discrete_leloup_goldbeter_set_initial(SEXP, SEXP, SEXP);
 extern SEXP discrete_leloup_goldbeter_set_user(SEXP, SEXP);
 extern SEXP discreteNoisy_leloup_goldbeter_contents(SEXP);
 extern SEXP discreteNoisy_leloup_goldbeter_create(SEXP);
 extern SEXP discreteNoisy_leloup_goldbeter_initial_conditions(SEXP, SEXP);
 extern SEXP discreteNoisy_leloup_goldbeter_metadata(SEXP);
 extern SEXP discreteNoisy_leloup_goldbeter_rhs_r(SEXP, SEXP, SEXP);
-extern SEXP discreteNoisy_leloup_goldbeter_set_initial(SEXP, SEXP, SEXP, SEXP);
+extern SEXP discreteNoisy_leloup_goldbeter_set_initial(SEXP, SEXP, SEXP);
 extern SEXP discreteNoisy_leloup_goldbeter_set_user(SEXP, SEXP);
 
 static const R_CMethodDef CEntries[] = {
