@@ -2,7 +2,10 @@
 # clockSim
 
 <!-- badges: start -->
+
 [![CRAN status](https://www.r-pkg.org/badges/version/clockSim)](https://CRAN.R-project.org/package=clockSim)
+[![r-universe version](https://yeyuan98.r-universe.dev/clockSim/badges/version)](https://yeyuan98.r-universe.dev/clockSim)
+[![r-universe status](https://yeyuan98.r-universe.dev/clockSim/badges/checks)](https://yeyuan98.r-universe.dev/clockSim)
 <!-- badges: end -->
 
 A user-friendly workflow for simulating circadian clock gene networks. 
